@@ -162,6 +162,7 @@ class MessagingManager @Inject constructor(
         const val COMMAND_WEBVIEW = "command_webview"
         const val COMMAND_KEEP_SCREEN_ON = "keep_screen_on"
         const val COMMAND_LAUNCH_APP = "command_launch_app"
+        const val COMMAND_APP_LOCK = "command_app_lock"
         const val COMMAND_PERSISTENT_CONNECTION = "command_persistent_connection"
         const val COMMAND_STOP_TTS = "command_stop_tts"
 
@@ -239,6 +240,7 @@ class MessagingManager @Inject constructor(
             COMMAND_MEDIA,
             COMMAND_UPDATE_SENSORS,
             COMMAND_LAUNCH_APP,
+            COMMAND_APP_LOCK,
             COMMAND_PERSISTENT_CONNECTION,
             COMMAND_STOP_TTS
         )
@@ -491,6 +493,19 @@ class MessagingManager @Inject constructor(
                                 Log.d(
                                     TAG,
                                     "Missing package name for app to launch, posting notification to device"
+                                )
+                                sendNotification(jsonData)
+                            }
+                        }
+                    }
+                    COMMAND_APP_LOCK -> {
+                        if (!jsonData[COMMAND].isNullOrEmpty())
+                            handleDeviceCommands(jsonData)
+                        else {
+                            mainScope.launch {
+                                Log.d(
+                                    TAG,
+                                    "Invalid app lock command received, posting notification to device"
                                 )
                                 sendNotification(jsonData)
                             }
@@ -880,6 +895,9 @@ class MessagingManager @Inject constructor(
                         launchApp(data)
                 } else
                     launchApp(data)
+            }
+            COMMAND_APP_LOCK -> {
+                setAppLock(data)
             }
             COMMAND_PERSISTENT_CONNECTION -> {
                 togglePersistentConnection(data[PERSISTENT].toString())
@@ -1931,6 +1949,29 @@ class MessagingManager @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e(TAG, "Unable to launch app", e)
+            mainScope.launch { sendNotification(data) }
+        }
+    }
+
+    private fun setAppLock(data: Map<String, String>) {
+        try {
+            if(data.containsKey("app_lock_enabled")) {
+                runBlocking {
+                    authenticationUseCase.setLockEnabled(data["app_lock_enabled"]!!.toBooleanStrict())
+                }
+            }
+            if (data.containsKey("app_lock_timeout")) {
+                runBlocking {
+                    integrationUseCase.sessionTimeOut(data["app_lock_timeout"]!!.toInt())
+                }
+            }
+            if (data.containsKey("home_bypass_enabled")) {
+                runBlocking {
+                    authenticationUseCase.setLockHomeBypassEnabled(data["home_bypass_enabled"]!!.toBooleanStrict())
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to set app lock settings", e)
             mainScope.launch { sendNotification(data) }
         }
     }
