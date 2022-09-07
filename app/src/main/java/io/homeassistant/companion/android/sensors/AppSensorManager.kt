@@ -10,6 +10,8 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import io.homeassistant.companion.android.BuildConfig
+import io.homeassistant.companion.android.common.data.authentication.AuthenticationRepository
+import io.homeassistant.companion.android.common.data.integration.IntegrationRepository
 import io.homeassistant.companion.android.common.sensors.SensorManager
 import java.math.RoundingMode
 import io.homeassistant.companion.android.common.R as commonR
@@ -75,6 +77,16 @@ class AppSensorManager : SensorManager {
             entityCategory = SensorManager.ENTITY_CATEGORY_DIAGNOSTIC
         )
 
+        val app_locked = SensorManager.BasicSensor(
+            "app_locked",
+            "binary_sensor",
+            commonR.string.basic_sensor_name_app_locked,
+            commonR.string.sensor_description_app_locked,
+            "mdi:lock-outline",
+            docsLink = "https://companion.home-assistant.io/docs/core/sensors#app-lock-sensor",
+            entityCategory = SensorManager.ENTITY_CATEGORY_DIAGNOSTIC
+        )
+
         val app_standby_bucket = SensorManager.BasicSensor(
             "app_standby_bucket",
             "sensor",
@@ -95,6 +107,11 @@ class AppSensorManager : SensorManager {
             entityCategory = SensorManager.ENTITY_CATEGORY_DIAGNOSTIC
         )
     }
+        
+    @Inject
+    lateinit var integrationUseCase: IntegrationRepository
+    @Inject
+    lateinit var authenticationUseCase: AuthenticationRepository
 
     override val enabledByDefault: Boolean
         get() = false
@@ -105,15 +122,15 @@ class AppSensorManager : SensorManager {
         return when {
             (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) ->
                 listOf(
-                    currentVersion, app_rx_gb, app_tx_gb, app_memory, app_inactive,
+                    currentVersion, app_rx_gb, app_tx_gb, app_memory, app_inactive, app_locked,
                     app_standby_bucket, app_importance
                 )
             (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) ->
                 listOf(
-                    currentVersion, app_rx_gb, app_tx_gb, app_memory, app_inactive,
+                    currentVersion, app_rx_gb, app_tx_gb, app_memory, app_inactive, app_locked,
                     app_importance
                 )
-            else -> listOf(currentVersion, app_rx_gb, app_tx_gb, app_memory, app_importance)
+            else -> listOf(currentVersion, app_rx_gb, app_tx_gb, app_memory, app_locked, app_importance)
         }
     }
 
@@ -130,6 +147,7 @@ class AppSensorManager : SensorManager {
         updateAppRxGb(context, myUid)
         updateAppTxGb(context, myUid)
         updateImportanceCheck(context)
+        updateAppLock(context)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val usageStatsManager = context.getSystemService<UsageStatsManager>()!!
             updateAppInactive(context, usageStatsManager)
@@ -214,6 +232,36 @@ class AppSensorManager : SensorManager {
             mapOf(
                 "free_memory" to freeSize.toBigDecimal().setScale(3, RoundingMode.HALF_EVEN),
                 "total_memory" to totalSize.toBigDecimal().setScale(3, RoundingMode.HALF_EVEN)
+            )
+        )
+    }
+
+    private fun updateAppLock(context: Context) {
+        if(!isEnabled(context, app_locked.id))
+            return
+
+        var isAppLocked = false
+        val icon = if (isAppLocked) "mdi:lock-outline" else "mdi:lock-open-outline"
+
+        val timeout = runBlocking {
+            integrationUseCase.getSessionTimeOut()
+        }
+        val lock_app = runBlocking {
+            authenticationUseCase.isLockEnabled()
+        }
+        val home_network_bypass = runBlocking {
+            authenticationUseCase.isLockHomeBypassEnabled()
+        }
+
+        onSensorUpdated(
+            context,
+            app_locked,
+            isAppLocked,
+            icon,
+            mapOf(
+                "lock_app" to lock_app,
+                "unlock_on_home_network" to home_network_bypass,
+                "timeout" to timeout
             )
         )
     }

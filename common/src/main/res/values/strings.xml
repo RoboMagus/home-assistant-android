@@ -33,6 +33,7 @@
     <string name="basic_sensor_name_alarm">Next Alarm</string>
     <string name="basic_sensor_name_app_importance">App Importance</string>
     <string name="basic_sensor_name_app_inactive">App Inactive</string>
+    <string name="basic_sensor_name_app_locked">App Locked</string>
     <string name="basic_sensor_name_app_memory">App Memory</string>
     <string name="basic_sensor_name_app_rx_gb">App Rx GB</string>
     <string name="basic_sensor_name_app_standby">App Standby Bucket</string>
@@ -457,6 +458,7 @@
     <string name="sensor_description_active_notification_count">Total count of active notifications that are visible to the user including silent, persistent and the Sensor Worker notifications.</string>
     <string name="sensor_description_app_importance">If the app is in the foreground, background or any other state it can be.</string>
     <string name="sensor_description_app_inactive">Whether the app is currently considered inactive by the system</string>
+    <string name="sensor_description_app_locked">Whether the app is currently locked</string>
     <string name="sensor_description_app_memory">Total used and available memory for the app</string>
     <string name="sensor_description_app_rx_gb">App Rx GB since last device reboot</string>
     <string name="sensor_description_app_standby">The apps current standby bucket. Standby buckets determine how much an app will be restricted from running background tasks such as jobs and alarms.</string>
