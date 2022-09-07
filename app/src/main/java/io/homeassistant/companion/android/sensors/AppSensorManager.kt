@@ -13,7 +13,9 @@ import io.homeassistant.companion.android.BuildConfig
 import io.homeassistant.companion.android.common.data.authentication.AuthenticationRepository
 import io.homeassistant.companion.android.common.data.integration.IntegrationRepository
 import io.homeassistant.companion.android.common.sensors.SensorManager
+import kotlinx.coroutines.runBlocking
 import java.math.RoundingMode
+import javax.inject.Inject
 import io.homeassistant.companion.android.common.R as commonR
 
 class AppSensorManager : SensorManager {
@@ -107,7 +109,7 @@ class AppSensorManager : SensorManager {
             entityCategory = SensorManager.ENTITY_CATEGORY_DIAGNOSTIC
         )
     }
-        
+
     @Inject
     lateinit var integrationUseCase: IntegrationRepository
     @Inject
@@ -237,7 +239,7 @@ class AppSensorManager : SensorManager {
     }
 
     private fun updateAppLock(context: Context) {
-        if(!isEnabled(context, app_locked.id))
+        if (!isEnabled(context, app_locked.id))
             return
 
         var isAppLocked = false

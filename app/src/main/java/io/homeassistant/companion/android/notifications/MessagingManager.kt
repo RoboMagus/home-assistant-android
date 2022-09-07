@@ -1945,7 +1945,7 @@ class MessagingManager @Inject constructor(
 
     private fun setAppLock(data: Map<String, String>) {
         try {
-            if(data.containsKey("app_lock_enabled")) {
+            if (data.containsKey("app_lock_enabled")) {
                 runBlocking {
                     authenticationUseCase.setLockEnabled(data["app_lock_enabled"]!!.toBooleanStrict())
                 }
