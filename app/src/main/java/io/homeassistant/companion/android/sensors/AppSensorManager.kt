@@ -247,13 +247,13 @@ class AppSensorManager : SensorManager {
 
         val timeout = runBlocking {
             integrationUseCase.getSessionTimeOut()
-        }
+        }.toString()
         val lock_app = runBlocking {
             authenticationUseCase.isLockEnabled()
-        }
+        }.toString()
         val home_network_bypass = runBlocking {
             authenticationUseCase.isLockHomeBypassEnabled()
-        }
+        }.toString()
 
         onSensorUpdated(
             context,
