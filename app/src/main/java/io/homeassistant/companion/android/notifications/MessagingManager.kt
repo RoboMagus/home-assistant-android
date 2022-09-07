@@ -499,17 +499,7 @@ class MessagingManager @Inject constructor(
                         }
                     }
                     COMMAND_APP_LOCK -> {
-                        if (!jsonData[COMMAND].isNullOrEmpty())
-                            handleDeviceCommands(jsonData)
-                        else {
-                            mainScope.launch {
-                                Log.d(
-                                    TAG,
-                                    "Invalid app lock command received, posting notification to device"
-                                )
-                                sendNotification(jsonData)
-                            }
-                        }
+                        handleDeviceCommands(jsonData)
                     }
                     COMMAND_PERSISTENT_CONNECTION -> {
                         val validPersistentTypes = WebsocketSetting.values().map { setting -> setting.name }
