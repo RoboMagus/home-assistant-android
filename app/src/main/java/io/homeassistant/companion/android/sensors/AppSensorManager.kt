@@ -9,17 +9,19 @@ import android.os.Process
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import io.homeassistant.companion.android.BuildConfig
 import io.homeassistant.companion.android.common.data.authentication.AuthenticationRepository
 import io.homeassistant.companion.android.common.data.integration.IntegrationRepository
-import io.homeassistant.companion.android.common.sensors.SensorManager
-import kotlinx.coroutines.runBlocking
-import java.math.RoundingMode
-import javax.inject.Inject
 import io.homeassistant.companion.android.common.R as commonR
 import io.homeassistant.companion.android.sensors.SensorReceiver
+import io.homeassistant.companion.android.common.sensors.SensorManager
+import java.math.RoundingMode
+import javax.inject.Inject
+import kotlinx.coroutines.runBlocking
 
 class AppSensorManager : SensorManager {
     companion object {
@@ -236,18 +238,25 @@ class AppSensorManager : SensorManager {
         )
     }
 
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface AppSensorManagerEntryPoint {
+        fun integrationRepository(): IntegrationRepository
+        fun authenticationRepository(): AuthenticationRepository
+    }
+
     private fun getIntegrationUseCase(context: Context): IntegrationRepository {
         return EntryPointAccessors.fromApplication(
             context,
-            SensorReceiver::class.java
+            AppSensorManagerEntryPoint::class.java
         ).integrationRepository()
     }
 
     private fun getAuthenticationUseCase(context: Context): AuthenticationRepository {
         return EntryPointAccessors.fromApplication(
             context,
-            SensorReceiver::class.java
-        ).AuthenticationRepository()
+            AppSensorManagerEntryPoint::class.java
+        ).authenticationRepository()
     }
 
 
