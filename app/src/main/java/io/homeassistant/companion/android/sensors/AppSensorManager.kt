@@ -9,6 +9,8 @@ import android.os.Process
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import io.homeassistant.companion.android.BuildConfig
 import io.homeassistant.companion.android.common.data.authentication.AuthenticationRepository
 import io.homeassistant.companion.android.common.data.integration.IntegrationRepository
@@ -17,6 +19,7 @@ import kotlinx.coroutines.runBlocking
 import java.math.RoundingMode
 import javax.inject.Inject
 import io.homeassistant.companion.android.common.R as commonR
+import io.homeassistant.companion.android.sensors.SensorReceiver
 
 class AppSensorManager : SensorManager {
     companion object {
@@ -109,11 +112,6 @@ class AppSensorManager : SensorManager {
             entityCategory = SensorManager.ENTITY_CATEGORY_DIAGNOSTIC
         )
     }
-
-    @Inject
-    lateinit var integrationUseCase: IntegrationRepository
-    @Inject
-    lateinit var authenticationUseCase: AuthenticationRepository
 
     override val enabledByDefault: Boolean
         get() = false
@@ -238,6 +236,21 @@ class AppSensorManager : SensorManager {
         )
     }
 
+    private fun getIntegrationUseCase(context: Context): IntegrationRepository {
+        return EntryPointAccessors.fromApplication(
+            context,
+            SensorReceiver::class.java
+        ).integrationRepository()
+    }
+
+    private fun getAuthenticationUseCase(context: Context): AuthenticationRepository {
+        return EntryPointAccessors.fromApplication(
+            context,
+            SensorReceiver::class.java
+        ).AuthenticationRepository()
+    }
+
+
     private fun updateAppLock(context: Context) {
         if (!isEnabled(context, app_locked.id))
             return
@@ -246,13 +259,13 @@ class AppSensorManager : SensorManager {
         val icon = if (isAppLocked) "mdi:lock-outline" else "mdi:lock-open-outline"
 
         val timeout = runBlocking {
-            integrationUseCase.getSessionTimeOut()
+            getIntegrationUseCase(context).getSessionTimeOut()
         }.toString()
         val lock_app = runBlocking {
-            authenticationUseCase.isLockEnabled()
+            getAuthenticationUseCase(context).isLockEnabled()
         }.toString()
         val home_network_bypass = runBlocking {
-            authenticationUseCase.isLockHomeBypassEnabled()
+            getAuthenticationUseCase(context).isLockHomeBypassEnabled()
         }.toString()
 
         onSensorUpdated(
