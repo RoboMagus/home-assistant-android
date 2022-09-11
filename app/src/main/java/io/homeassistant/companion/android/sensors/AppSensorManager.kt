@@ -2,7 +2,9 @@ package io.homeassistant.companion.android.sensors
 
 import android.app.ActivityManager
 import android.app.usage.UsageStatsManager
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
 import android.net.TrafficStats
 import android.os.Build
 import android.os.Process
@@ -23,10 +25,21 @@ import java.math.RoundingMode
 import javax.inject.Inject
 import kotlinx.coroutines.runBlocking
 
-class AppSensorManager : SensorManager {
+class AppSensorManager : BroadcastReceiver(), SensorManager {
     companion object {
         private const val TAG = "AppSensor"
         private const val GB = 1000000000
+
+        const val ACTION_APP_LOCK_UPDATE =
+            "io.homeassistant.companion.android.background.APPLOCK_UPDATE"
+
+        const val ACTION_APP_LOCK_UPDATE_EXTRA =
+            "io.homeassistant.companion.android.background.applock_update.LOCK"
+
+        // Or create exposed function here to cause lock sensor update...
+        // (Search 'setHighAccuracyModeSetting')
+
+        private var isAppLocked = false
 
         val currentVersion = SensorManager.BasicSensor(
             "current_version",
@@ -113,6 +126,12 @@ class AppSensorManager : SensorManager {
             docsLink = "https://companion.home-assistant.io/docs/core/sensors#app-importance-sensor",
             entityCategory = SensorManager.ENTITY_CATEGORY_DIAGNOSTIC
         )
+    }
+
+    override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action == ACTION_APP_LOCK_UPDATE) {
+            updateAppLock(context, intent)
+        }
     }
 
     override val enabledByDefault: Boolean
@@ -259,12 +278,14 @@ class AppSensorManager : SensorManager {
         ).authenticationRepository()
     }
 
-
-    private fun updateAppLock(context: Context) {
+    fun updateAppLock(context: Context, intent: Intent? = null) {
         if (!isEnabled(context, app_locked.id))
             return
 
-        var isAppLocked = false
+        if (intent != null && intent.extras != null && intent.hasExtra(ACTION_APP_LOCK_UPDATE_EXTRA)) {
+            isAppLocked = intent.getBooleanExtra(ACTION_APP_LOCK_UPDATE_EXTRA, isAppLocked)
+        }
+
         val icon = if (isAppLocked) "mdi:lock-outline" else "mdi:lock-open-outline"
 
         val timeout = runBlocking {
@@ -276,6 +297,12 @@ class AppSensorManager : SensorManager {
         val home_network_bypass = runBlocking {
             getAuthenticationUseCase(context).isLockHomeBypassEnabled()
         }.toString()
+
+        // Add unlock time in ms...
+
+        // val cal: Calendar = GregorianCalendar()
+        // cal.timeInMillis = triggerTime
+        // local = cal.time.toString()
 
         onSensorUpdated(
             context,

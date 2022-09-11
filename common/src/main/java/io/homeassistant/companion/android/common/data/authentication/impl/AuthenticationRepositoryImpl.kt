@@ -1,7 +1,11 @@
 package io.homeassistant.companion.android.common.data.authentication.impl
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
 import android.util.Log
 import com.fasterxml.jackson.databind.ObjectMapper
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.homeassistant.companion.android.common.data.LocalStorage
 import io.homeassistant.companion.android.common.data.authentication.AuthenticationRepository
 import io.homeassistant.companion.android.common.data.authentication.AuthorizationException
@@ -14,7 +18,8 @@ import javax.inject.Named
 class AuthenticationRepositoryImpl @Inject constructor(
     private val authenticationService: AuthenticationService,
     @Named("session") private val localStorage: LocalStorage,
-    private val urlRepository: UrlRepository
+    private val urlRepository: UrlRepository,
+    @ApplicationContext private val context: Context
 ) : AuthenticationRepository {
 
     companion object {
@@ -171,10 +176,24 @@ class AuthenticationRepositoryImpl @Inject constructor(
 
     override suspend fun setLockEnabled(enabled: Boolean) {
         localStorage.putBoolean(PREF_BIOMETRIC_ENABLED, enabled)
+
+        // Update sensor...
+        val intent = Intent().apply {
+            action = "io.homeassistant.companion.android.background.APPLOCK_UPDATE"
+            component = ComponentName("io.homeassistant.companion.android", "io.homeassistant.companion.android.sensors.AppSensorManager")
+        }
+        context.sendBroadcast(intent)
     }
 
     override suspend fun setLockHomeBypassEnabled(enabled: Boolean) {
         localStorage.putBoolean(PREF_BIOMETRIC_HOME_BYPASS_ENABLED, enabled)
+
+        // Update sensor...
+        val intent = Intent().apply {
+            action = "io.homeassistant.companion.android.background.APPLOCK_UPDATE"
+            component = ComponentName("io.homeassistant.companion.android", "io.homeassistant.companion.android.sensors.AppSensorManager")
+        }
+        context.sendBroadcast(intent)
     }
 
     override suspend fun isLockEnabledRaw(): Boolean {
