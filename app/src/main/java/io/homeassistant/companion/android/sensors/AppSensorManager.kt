@@ -1,6 +1,7 @@
 package io.homeassistant.companion.android.sensors
 
 import android.app.ActivityManager
+import android.app.PendingIntent
 import android.app.usage.UsageStatsManager
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -29,6 +30,17 @@ class AppSensorManager : BroadcastReceiver(), SensorManager {
     companion object {
         private const val TAG = "AppSensor"
         private const val GB = 1000000000
+        
+        const val ACTION_APP_LOCK_UPDATE =
+            "io.homeassistant.companion.android.background.APPLOCK_UPDATE"
+
+        const val ACTION_APP_LOCK_UPDATE_EXTRA = 
+            "io.homeassistant.companion.android.background.applock_update.LOCK"
+
+        // Or create exposed function here to cause lock sensor update...
+        // (Search 'setHighAccuracyModeSetting')
+
+        private var isAppLocked = false
 
         const val ACTION_APP_LOCK_UPDATE =
             "io.homeassistant.companion.android.background.APPLOCK_UPDATE"
