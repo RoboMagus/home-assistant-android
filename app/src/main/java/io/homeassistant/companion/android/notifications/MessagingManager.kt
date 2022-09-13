@@ -1961,8 +1961,8 @@ class MessagingManager @Inject constructor(
         val home_bypass_value = data[APP_LOCK_ENABLED]?.toLowerCase()?.toBooleanStrictOrNull()
 
         val invalid = (app_lock_enable_param_present && app_lock_enable_value == null) ||
-                      (app_lock_timeout_param_present && app_lock_timeout_value == null) ||
-                      (home_bypass_param_present && home_bypass_value == null)
+            (app_lock_timeout_param_present && app_lock_timeout_value == null) ||
+            (home_bypass_param_present && home_bypass_value == null)
 
         var updated = false
         if (!invalid) {
