@@ -245,6 +245,15 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".sensors.AppSensorManager"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="io.homeassistant.companion.android.background.APPLOCK_UPDATE" />
+            </intent-filter>
+        </receiver>
+
         <activity android:name=".launch.LaunchActivity"
             android:exported="true"
             android:theme="@style/Theme.LaunchScreen">

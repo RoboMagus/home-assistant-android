@@ -1,6 +1,5 @@
 package io.homeassistant.companion.android.common.data.authentication.impl
 
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -176,24 +175,23 @@ class AuthenticationRepositoryImpl @Inject constructor(
 
     override suspend fun setLockEnabled(enabled: Boolean) {
         localStorage.putBoolean(PREF_BIOMETRIC_ENABLED, enabled)
-
         // Update sensor...
-        val intent = Intent().apply {
-            action = "io.homeassistant.companion.android.background.APPLOCK_UPDATE"
-            component = ComponentName("io.homeassistant.companion.android", "io.homeassistant.companion.android.sensors.AppSensorManager")
-        }
-        context.sendBroadcast(intent)
+        context.sendBroadcast(
+            Intent(context, this.javaClass).apply {
+                action = "io.homeassistant.companion.android.background.APPLOCK_UPDATE"
+            }
+        )
     }
 
     override suspend fun setLockHomeBypassEnabled(enabled: Boolean) {
         localStorage.putBoolean(PREF_BIOMETRIC_HOME_BYPASS_ENABLED, enabled)
 
         // Update sensor...
-        val intent = Intent().apply {
-            action = "io.homeassistant.companion.android.background.APPLOCK_UPDATE"
-            component = ComponentName("io.homeassistant.companion.android", "io.homeassistant.companion.android.sensors.AppSensorManager")
-        }
-        context.sendBroadcast(intent)
+        context.sendBroadcast(
+            Intent(context, this.javaClass).apply {
+                action = "io.homeassistant.companion.android.background.APPLOCK_UPDATE"
+            }
+        )
     }
 
     override suspend fun isLockEnabledRaw(): Boolean {

@@ -1,6 +1,9 @@
 package io.homeassistant.companion.android.common.data.integration.impl
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.homeassistant.companion.android.common.BuildConfig
 import io.homeassistant.companion.android.common.data.HomeAssistantVersion
 import io.homeassistant.companion.android.common.data.LocalStorage
@@ -45,7 +48,8 @@ class IntegrationRepositoryImpl @Inject constructor(
     @Named("manufacturer") private val manufacturer: String,
     @Named("model") private val model: String,
     @Named("osVersion") private val osVersion: String,
-    @Named("deviceId") private val deviceId: String
+    @Named("deviceId") private val deviceId: String,
+    @ApplicationContext private val context: Context
 ) : IntegrationRepository {
 
     companion object {
@@ -391,6 +395,13 @@ class IntegrationRepositoryImpl @Inject constructor(
         }
         Log.d(TAG, "setAppActive(): " + active)
         appActive = active
+
+        // Update sensor...
+        context.sendBroadcast(
+            Intent(context, this.javaClass).apply {
+                action = "io.homeassistant.companion.android.background.APPLOCK_UPDATE"
+            }
+        )
     }
 
     override suspend fun sessionTimeOut(value: Int) {
