@@ -385,8 +385,9 @@ class IntegrationRepositoryImpl @Inject constructor(
         val lockEnabled = authenticationRepository.isLockEnabled()
         val sessionExpired = System.currentTimeMillis() > getSessionExpireMillis()
 
-        Log.d(TAG, "isAppLocked(). LockEnabled: " + lockEnabled + ", appActive: " + appActive + ", expireMillis: " + getSessionExpireMillis() + ", currentMillis: " + System.currentTimeMillis())
-        return (lockEnabled && !appActive && sessionExpired)
+        val locked = (lockEnabled && sessionExpired && !appActive)
+        Log.d(TAG, "isAppLocked(): " + locked + " (LockEnabled: " + lockEnabled + ", appActive: " + appActive + ", expireMillis: " + getSessionExpireMillis() + ", currentMillis: " + System.currentTimeMillis() + ")")
+        return locked
     }
 
     override suspend fun setAppActive(active: Boolean) {

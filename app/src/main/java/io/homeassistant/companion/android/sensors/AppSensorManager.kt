@@ -1,7 +1,6 @@
 package io.homeassistant.companion.android.sensors
 
 import android.app.ActivityManager
-import android.app.PendingIntent
 import android.app.usage.UsageStatsManager
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -20,23 +19,21 @@ import io.homeassistant.companion.android.BuildConfig
 import io.homeassistant.companion.android.common.data.authentication.AuthenticationRepository
 import io.homeassistant.companion.android.common.data.integration.IntegrationRepository
 import io.homeassistant.companion.android.common.R as commonR
-import io.homeassistant.companion.android.sensors.SensorReceiver
 import io.homeassistant.companion.android.common.sensors.SensorManager
 import java.math.RoundingMode
 import java.util.Calendar
 import java.util.GregorianCalendar
-import javax.inject.Inject
 import kotlinx.coroutines.runBlocking
 
 class AppSensorManager : BroadcastReceiver(), SensorManager {
     companion object {
         private const val TAG = "AppSensor"
         private const val GB = 1000000000
-        
+
         const val ACTION_APP_LOCK_UPDATE =
             "io.homeassistant.companion.android.background.APPLOCK_UPDATE"
 
-        const val ACTION_APP_LOCK_UPDATE_EXTRA = 
+        const val ACTION_APP_LOCK_UPDATE_EXTRA =
             "io.homeassistant.companion.android.background.applock_update.LOCK"
 
         // Or create exposed function here to cause lock sensor update...
@@ -287,7 +284,7 @@ class AppSensorManager : BroadcastReceiver(), SensorManager {
         // if (intent != null && intent.extras != null && intent.hasExtra(ACTION_APP_LOCK_UPDATE_EXTRA)) {
         //     isAppLocked = intent.getBooleanExtra(ACTION_APP_LOCK_UPDATE_EXTRA, isAppLocked)
         // }
-        
+
         val isAppLocked = runBlocking {
             getIntegrationUseCase(context).isAppLocked()
         }
@@ -296,13 +293,13 @@ class AppSensorManager : BroadcastReceiver(), SensorManager {
 
         val timeout = runBlocking {
             getIntegrationUseCase(context).getSessionTimeOut()
-        }.toString()
+        }
         val lock_app = runBlocking {
             getAuthenticationUseCase(context).isLockEnabled()
-        }.toString()
+        }
         val home_network_bypass = runBlocking {
             getAuthenticationUseCase(context).isLockHomeBypassEnabled()
-        }.toString()
+        }
 
         val session_expire_millis: Long = runBlocking {
             getIntegrationUseCase(context).getSessionExpireMillis()
@@ -311,7 +308,7 @@ class AppSensorManager : BroadcastReceiver(), SensorManager {
         cal.timeInMillis = session_expire_millis
         val session_expire_dt = cal.time.toString()
 
-        Log.d(TAG, "updateAppLock(): isAppLocked: ${isAppLocked}, timeout: ${timeout}, lock_app: ${lock_app}, home_network_bypass: ${home_network_bypass}, session_expire: ${session_expire_dt}")
+        Log.d(TAG, "updateAppLock(): isAppLocked: $isAppLocked, timeout: $timeout, lock_app: $lock_app, home_network_bypass: $home_network_bypass, session_expire: $session_expire_dt")
 
         onSensorUpdated(
             context,
