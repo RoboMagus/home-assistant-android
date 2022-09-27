@@ -295,7 +295,7 @@ class AppSensorManager : BroadcastReceiver(), SensorManager {
             getIntegrationUseCase(context).getSessionTimeOut()
         }
         val lock_app = runBlocking {
-            getAuthenticationUseCase(context).isLockEnabled()
+            getAuthenticationUseCase(context).isLockEnabledRaw()
         }
         val home_network_bypass = runBlocking {
             getAuthenticationUseCase(context).isLockHomeBypassEnabled()
@@ -308,6 +308,9 @@ class AppSensorManager : BroadcastReceiver(), SensorManager {
         cal.timeInMillis = session_expire_millis
         val session_expire_dt = cal.time.toString()
 
+        val session_expire_millis_report = if (isAppLocked) "" else session_expire_millis
+        val session_expire_datetime_report = if (isAppLocked) "" else session_expire_dt
+
         Log.d(TAG, "updateAppLock(): isAppLocked: $isAppLocked, timeout: $timeout, lock_app: $lock_app, home_network_bypass: $home_network_bypass, session_expire: $session_expire_dt")
 
         onSensorUpdated(
@@ -319,8 +322,8 @@ class AppSensorManager : BroadcastReceiver(), SensorManager {
                 "lock_app" to lock_app,
                 "unlock_on_home_network" to home_network_bypass,
                 "timeout" to timeout,
-                "session_expire_millis" to session_expire_millis,
-                "session_expire" to session_expire_dt
+                "session_expire_millis" to session_expire_millis_report,
+                "session_expire" to session_expire_datetime_report
             )
         )
     }
