@@ -119,6 +119,7 @@ class MessagingManager @Inject constructor(
         const val VIDEO_URL = "video"
         const val VISIBILITY = "visibility"
         const val LED_COLOR = "ledColor"
+        const val BYPASS_DND = "bypassDnD"
         const val VIBRATION_PATTERN = "vibrationPattern"
         const val PERSISTENT = "persistent"
         const val CHRONOMETER = "chronometer"
@@ -1756,11 +1757,26 @@ class MessagingManager @Inject constructor(
             if (channelName == ALARM_STREAM)
                 handleChannelSound(channel)
 
+            setChannelBypassDnd(data, channel)
             setChannelLedColor(data, channel)
             setChannelVibrationPattern(data, channel)
             notificationManagerCompat.createNotificationChannel(channel)
         }
+
+
         return channelID
+    }
+
+    private fun setChannelBypassDnd(
+        data: Map<String, String>,
+        channel: NotificationChannel
+    ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val bypassDnD = data[BYPASS_DND]?.toLowerCase()?.toBooleanStrictOrNull()
+            if (bypassDnD != null) {
+	            channel.setBypassDnd(bypassDnD)
+            }
+        }
     }
 
     private fun setChannelLedColor(
