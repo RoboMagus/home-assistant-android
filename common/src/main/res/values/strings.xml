@@ -963,6 +963,8 @@
     <string name="tile_icon_original">Use entity icon</string>
     <string name="tile_select">Select a tile to edit</string>
     <string name="shortcut_pinned">Pinned Shortcuts</string>
+    <string name="clear_cache">Clear Cache</string>
+    <string name="clear_cache_summary">Clear app cache to force reload of frontend components</string>
     <string name="remote_debugging">WebView Remote Debugging</string>
     <string name="remote_debugging_summary">Allow remote debugging of WebView to troubleshoot Home Assistant frontend issues</string>
     <string name="websocket_setting_home_wifi">On Home WiFi Only\n\nNotifications will be delivered by Google only when not on Home WiFi.</string>

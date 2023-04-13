@@ -67,6 +67,10 @@
             android:icon="@drawable/ic_home_variant_outline"
             android:title="@string/always_show_first_view_on_app_start"
             android:summary="@string/always_show_first_view_on_app_start_summary" />
+        <Preference
+            android:key="clear_cache"
+            android:title="@string/clear_cache"
+            android:summary="@string/clear_cache_summary" />
         <SwitchPreference
             android:key="webview_debug"
             android:icon="@drawable/ic_android_debug_bridge"

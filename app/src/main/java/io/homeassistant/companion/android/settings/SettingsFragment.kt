@@ -25,6 +25,7 @@ import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.homeassistant.companion.android.BuildConfig
 import io.homeassistant.companion.android.R
 import io.homeassistant.companion.android.authenticator.Authenticator
@@ -49,6 +50,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import java.io.File
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -298,6 +300,22 @@ class SettingsFragment(
                 addToBackStack(getString(commonR.string.log))
             }
             return@setOnPreferenceClickListener true
+        }
+
+        findPreference<Preference>("clear_cache")?.let {
+            it.setOnPreferenceClickListener {
+                Log.w(TAG, "Clear cach clicked!")
+                File(requireContext().cacheDir.absolutePath, "/").walk().forEach {
+                    Log.w(TAG, "Cache file: ${it}")
+                }
+                File(requireContext().cacheDir.absolutePath, "WebView").deleteRecursively()
+                
+                Log.w(TAG, "---->> After Clearing:")
+                File(requireContext().cacheDir.absolutePath, "/").walk().forEach {
+                    Log.w(TAG, "Cache file: ${it}")
+                }
+                return@setOnPreferenceClickListener true
+            }
         }
     }
 
