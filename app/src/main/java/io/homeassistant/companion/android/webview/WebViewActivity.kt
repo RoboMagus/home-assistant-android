@@ -771,6 +771,11 @@ class WebViewActivity : BaseActivity(), io.homeassistant.companion.android.webvi
         enablePinchToZoom()
 
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG || presenter.isWebViewDebugEnabled())
+        
+        webView.evaluateJavascript(
+            "document.addEventListener('config-refresh', function () { location.reload(true) });",
+            null
+        )
 
         requestedOrientation = when (presenter.getScreenOrientation()) {
             getString(commonR.string.screen_orientation_option_value_portrait) -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
