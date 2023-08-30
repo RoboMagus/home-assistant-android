@@ -190,6 +190,7 @@ class AuthenticationRepositoryImpl @AssistedInject constructor(
 
     override suspend fun isLockEnabled(): Boolean {
         val raw = isLockEnabledRaw()
+        Log.d(TAG, "AuthenticationRepository::isLockEnabled(). raw: $raw")
         val bypass = isLockHomeBypassEnabled()
         return if (raw && bypass) {
             !server.connection.isHomeWifiSsid()

@@ -1014,7 +1014,7 @@ class WebViewActivity : BaseActivity(), io.homeassistant.companion.android.webvi
     private fun authenticationResult(result: Int) {
         when (result) {
             Authenticator.SUCCESS -> {
-                Log.d(TAG, "Authentication successful, unlocking app")
+                Log.d(TAG, "Authentication successful, unlocking app: Webview")
                 appLocked = false
                 presenter.setAppActive(true)
                 binding.blurView.setBlurEnabled(false)
@@ -1051,6 +1051,7 @@ class WebViewActivity : BaseActivity(), io.homeassistant.companion.android.webvi
 
     override fun unlockAppIfNeeded() {
         appLocked = presenter.isAppLocked()
+        Log.d(TAG, "unlockAppIfNeeded() appLocked: $appLocked")
         if (appLocked) {
             binding.blurView.setBlurEnabled(true)
             authenticator.authenticate(getString(commonR.string.biometric_title))

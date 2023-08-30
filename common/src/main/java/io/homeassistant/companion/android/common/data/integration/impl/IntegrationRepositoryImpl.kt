@@ -391,7 +391,7 @@ class IntegrationRepositoryImpl @AssistedInject constructor(
         val sessionExpired = currentMillis > sessionExpireMillis
         val appLocked = lockEnabled && !appActive && sessionExpired
 
-        Log.d(TAG, "isAppLocked(): $appLocked. (LockEnabled: $lockEnabled, appActive: $appActive, expireMillis: $sessionExpireMillis, currentMillis: $currentMillis)")
+        Log.d(TAG, "isAppLocked(): $appLocked. (ServerId: $serverId, LockEnabled: $lockEnabled, appActive: $appActive, expireMillis: $sessionExpireMillis, currentMillis: $currentMillis)")
         return appLocked
     }
 

@@ -150,7 +150,7 @@ class SettingsActivity : BaseActivity() {
             authenticating = false
             when (result) {
                 Authenticator.SUCCESS -> {
-                    Log.d(TAG, "Authentication successful, unlocking app")
+                    Log.d(TAG, "Authentication successful, unlocking app: Settings")
                     blurView.setBlurEnabled(false)
                     setAppActive(true)
                 }
@@ -169,6 +169,8 @@ class SettingsActivity : BaseActivity() {
     private fun isAppLocked(): Boolean {
         val serverFragment = supportFragmentManager.findFragmentByTag(ServerSettingsFragment.TAG)
         val serverLocked = serverFragment?.let { isAppLocked((it as ServerSettingsFragment).getServerId()) } ?: false
+        val _applocked = isAppLocked(ServerManager.SERVER_ID_ACTIVE)
+        Log.d(TAG, "SettingsActivity::isAppLocked(). serverLocked: $serverLocked, isApplocked: $_applocked")
         return serverLocked || isAppLocked(ServerManager.SERVER_ID_ACTIVE)
     }
 

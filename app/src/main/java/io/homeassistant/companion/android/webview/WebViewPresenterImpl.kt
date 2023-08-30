@@ -236,12 +236,14 @@ class WebViewPresenterImpl @Inject constructor(
     override fun isAppLocked(): Boolean = runBlocking {
         if (serverManager.isRegistered()) {
             try {
+                Log.d(TAG, "WebViewPresenter::isAppLocked(). serverId: $serverId")
                 serverManager.integrationRepository(serverId).isAppLocked()
             } catch (e: IllegalArgumentException) {
                 Log.w(TAG, "Cannot determine app locked state")
                 false
             }
         } else {
+            Log.w(TAG, "WebViewPresenter::isAppLocked(). NOT serverManager.isRegistered()")
             false
         }
     }
