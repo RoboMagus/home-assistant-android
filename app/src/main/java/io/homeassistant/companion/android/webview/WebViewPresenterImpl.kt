@@ -137,6 +137,8 @@ class WebViewPresenterImpl @Inject constructor(
         }
         setActiveServer(id)
         onViewReady(null)
+        
+        Log.d(TAG, "switchActiveServer --> unlockAppIfNeeded()")
         view.unlockAppIfNeeded()
     }
 
