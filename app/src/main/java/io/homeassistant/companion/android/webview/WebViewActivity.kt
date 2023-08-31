@@ -207,6 +207,7 @@ class WebViewActivity : BaseActivity(), io.homeassistant.companion.android.webvi
     private var firstAuthTime: Long = 0
     private var resourceURL: String = ""
     private var appLocked = true
+    private var unlockingApp = false
     private var exoPlayer: ExoPlayer? = null
     private var isExoFullScreen = false
     private var exoTop = 0 // These margins are from the DOM and scaled to screen
@@ -1012,18 +1013,24 @@ class WebViewActivity : BaseActivity(), io.homeassistant.companion.android.webvi
         }
     }
     private fun authenticationResult(result: Int) {
+        Log.d(TAG, "authenticationResult() unlockingApp: $unlockingApp")
         when (result) {
             Authenticator.SUCCESS -> {
                 Log.d(TAG, "Authentication successful, unlocking app: Webview")
                 appLocked = false
+                unlockingApp = false
                 presenter.setAppActive(true)
                 binding.blurView.setBlurEnabled(false)
             }
             Authenticator.CANCELED -> {
                 Log.d(TAG, "Authentication canceled by user, closing activity")
+                unlockingApp = false
                 finishAffinity()
             }
-            else -> Log.d(TAG, "Authentication failed, retry attempts allowed")
+            else -> {
+                Log.d(TAG, "Authentication failed, retry attempts allowed")
+                unlockingApp = false
+            }
         }
     }
 
@@ -1052,9 +1059,10 @@ class WebViewActivity : BaseActivity(), io.homeassistant.companion.android.webvi
 
     override fun unlockAppIfNeeded() {
         appLocked = presenter.isAppLocked()
-        Log.d(TAG, "unlockAppIfNeeded() appLocked: $appLocked")
+        Log.d(TAG, "unlockAppIfNeeded() appLocked: $appLocked, unlockingApp: $unlockingApp")
         if (appLocked) {
             binding.blurView.setBlurEnabled(true)
+            unlockingApp = true
             authenticator.authenticate("Hass WebView")
         } else {
             binding.blurView.setBlurEnabled(false)
