@@ -1801,6 +1801,7 @@ class MessagingManager @Inject constructor(
 
         val canAuth = (BiometricManager.from(context).canAuthenticate(Authenticator.AUTH_TYPES) == BiometricManager.BIOMETRIC_SUCCESS)
         val serverId = data[THIS_SERVER_ID]!!.toInt()
+        Log.wd(TAG, "setAppLock: appLockEnableValue: $appLockEnableValue, appLockTimeoutValue: $appLockTimeoutValue, homeBypassEnableValue: $homeBypassEnableValue, canAuth: $canAuth, serverId: $serverId")
         if (canAuth) {
             if (appLockEnableValue != null) {
                 serverManager.authenticationRepository(serverId).setLockEnabled(appLockEnableValue)

@@ -176,8 +176,10 @@ class AuthenticationRepositoryImpl @AssistedInject constructor(
         }
     }
 
-    override suspend fun setLockEnabled(enabled: Boolean) =
-        localStorage.putBoolean("${serverId}_$PREF_BIOMETRIC_ENABLED", enabled)
+    override suspend fun setLockEnabled(enabled: Boolean) {
+        Log.d(TAG, "AuthenticationRepository::setLockEnabled(). serverId: $serverId, enabled: $enabled")
+        return localStorage.putBoolean("${serverId}_$PREF_BIOMETRIC_ENABLED", enabled)
+    }
 
     override suspend fun setLockHomeBypassEnabled(enabled: Boolean) =
         localStorage.putBoolean("${serverId}_$PREF_BIOMETRIC_HOME_BYPASS_ENABLED", enabled)
