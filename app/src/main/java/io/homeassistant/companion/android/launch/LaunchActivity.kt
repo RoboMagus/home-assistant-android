@@ -82,6 +82,7 @@ class LaunchActivity : AppCompatActivity(), LaunchView {
     }
 
     override fun displayWebview() {
+        Log.d(TAG, "displayWebview() --> setSessionExpireMillis(0)")
         presenter.setSessionExpireMillis(0)
 
         if (packageManager.hasSystemFeature(PackageManager.FEATURE_AUTOMOTIVE) && BuildConfig.FLAVOR == "full") {

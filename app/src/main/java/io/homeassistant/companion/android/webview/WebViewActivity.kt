@@ -809,6 +809,7 @@ class WebViewActivity : BaseActivity(), io.homeassistant.companion.android.webvi
 
     override fun onPause() {
         super.onPause()
+        Log.d(TAG, "WebViewActivity::onPause() --> setAppActive(false)")
         presenter.setAppActive(false)
         if (!isFinishing) SensorReceiver.updateAllSensors(this)
     }
@@ -1100,6 +1101,7 @@ class WebViewActivity : BaseActivity(), io.homeassistant.companion.android.webvi
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
+        Log.d(TAG, "WebViewActivity::onUserLeaveHint() --> setAppActive(false)")
         presenter.setAppActive(false)
         videoHeight = decor.height
         val bounds = Rect(0, 0, 1920, 1080)
