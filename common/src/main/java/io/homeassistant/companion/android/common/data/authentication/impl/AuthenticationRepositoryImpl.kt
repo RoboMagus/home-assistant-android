@@ -107,7 +107,7 @@ class AuthenticationRepositoryImpl @AssistedInject constructor(
     }
 
     override suspend fun deletePreferences() {
-        Log.i(TAG, "AuthenticationRepository::deletePreferences(). serverId: $serverId)
+        Log.i(TAG, "AuthenticationRepository::deletePreferences(). serverId: $serverId")
         localStorage.remove("${serverId}_$PREF_BIOMETRIC_ENABLED")
         localStorage.remove("${serverId}_$PREF_BIOMETRIC_HOME_BYPASS_ENABLED")
     }
