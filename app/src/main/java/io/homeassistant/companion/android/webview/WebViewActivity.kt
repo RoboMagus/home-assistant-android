@@ -1019,20 +1019,18 @@ class WebViewActivity : BaseActivity(), io.homeassistant.companion.android.webvi
             Authenticator.SUCCESS -> {
                 Log.d(TAG, "Authentication successful, unlocking app: Webview")
                 appLocked = false
-                unlockingApp = false
                 presenter.setAppActive(true)
                 binding.blurView.setBlurEnabled(false)
             }
             Authenticator.CANCELED -> {
                 Log.d(TAG, "Authentication canceled by user, closing activity")
-                unlockingApp = false
                 finishAffinity()
             }
             else -> {
                 Log.d(TAG, "Authentication failed, retry attempts allowed")
-                unlockingApp = false
             }
         }
+        unlockingApp = false
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -1063,8 +1061,10 @@ class WebViewActivity : BaseActivity(), io.homeassistant.companion.android.webvi
         Log.d(TAG, "unlockAppIfNeeded() appLocked: $appLocked, unlockingApp: $unlockingApp")
         if (appLocked) {
             binding.blurView.setBlurEnabled(true)
+            if (!unlockingApp) {
+                authenticator.authenticate("Hass WebView")
+            }
             unlockingApp = true
-            authenticator.authenticate("Hass WebView")
         } else {
             binding.blurView.setBlurEnabled(false)
         }
