@@ -1207,8 +1207,8 @@ class WebViewActivity : BaseActivity(), io.homeassistant.companion.android.webvi
             tlsWebViewClient = WebViewCompat.getWebViewClient(webView) as TLSWebViewClient
         }
 
-        Log.e(TAG, "WebViewActivity::showError errorType: ${errorType}, error: ${error}, description: ${description}")
-        Log.d(TAG, "WebViewActivity::showError->tlsWebViewClient clientAuthNeeded: ${tlsWebViewClient?.isTLSClientAuthNeeded}, hasUserDeniedAccess: ${tlsWebViewClient.hasUserDeniedAccess}, isCertificateChainValid: ${tlsWebViewClient.isCertificateChainValid}")
+        Log.e(TAG, "WebViewActivity::showError errorType: $errorType, error: $error, description: $description")
+        Log.d(TAG, "WebViewActivity::showError->tlsWebViewClient clientAuthNeeded: ${tlsWebViewClient?.isTLSClientAuthNeeded}, hasUserDeniedAccess: ${tlsWebViewClient?.hasUserDeniedAccess}, isCertificateChainValid: ${tlsWebViewClient?.isCertificateChainValid}")
         if (tlsWebViewClient?.isTLSClientAuthNeeded == true &&
             errorType == ErrorType.TIMEOUT &&
             !tlsWebViewClient.hasUserDeniedAccess
