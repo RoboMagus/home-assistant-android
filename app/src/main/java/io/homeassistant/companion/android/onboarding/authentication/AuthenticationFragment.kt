@@ -204,6 +204,7 @@ class AuthenticationFragment : Fragment() {
             // Fragment is at least paused, can't display alert
             return
         }
+        Log.e(TAG, "AuthenticationFragment::showError SSLError: ${sslError?.primaryError}, message: ${message}")
         AlertDialog.Builder(requireContext())
             .setTitle(commonR.string.error_connection_failed)
             .setMessage(

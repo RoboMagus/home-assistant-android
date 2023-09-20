@@ -175,12 +175,14 @@ class WebViewPresenterImpl @Inject constructor(
         }
     }
 
+    // Fails here...
     override fun onGetExternalAuth(context: Context, callback: String, force: Boolean) {
         mainScope.launch {
             try {
                 view.setExternalAuth("$callback(true, ${serverManager.authenticationRepository(serverId).retrieveExternalAuthentication(force)})")
             } catch (e: Exception) {
                 Log.e(TAG, "Unable to retrieve external auth", e)
+                Log.e(TAG, "WebViewPresenterImpl::onGetExternalAuth -> view.setExternalAuth", e)
                 val anonymousSession = serverManager.getServer(serverId) == null || serverManager.authenticationRepository(serverId).getSessionState() == SessionState.ANONYMOUS
                 view.setExternalAuth("$callback(false)")
                 view.showError(
@@ -191,6 +193,7 @@ class WebViewPresenterImpl @Inject constructor(
                     },
                     description = when {
                         anonymousSession -> null
+                        // This is the error I get...
                         e is SSLHandshakeException || (e is SocketTimeoutException && e.suppressed.any { it is SSLHandshakeException }) -> context.getString(commonR.string.webview_error_FAILED_SSL_HANDSHAKE)
                         e is SSLException || (e is SocketTimeoutException && e.suppressed.any { it is SSLException }) -> context.getString(commonR.string.webview_error_SSL_INVALID)
                         else -> null

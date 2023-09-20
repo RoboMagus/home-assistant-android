@@ -592,6 +592,7 @@ class WebViewActivity : BaseActivity(), io.homeassistant.companion.android.webvi
                         }
                     }
 
+                    // Fails here...
                     @JavascriptInterface
                     fun getExternalAuth(payload: String) {
                         JSONObject(payload).let {
@@ -1206,10 +1207,13 @@ class WebViewActivity : BaseActivity(), io.homeassistant.companion.android.webvi
             tlsWebViewClient = WebViewCompat.getWebViewClient(webView) as TLSWebViewClient
         }
 
+        Log.e(TAG, "WebViewActivity::showError errorType: ${errorType}, error: ${error}, description: ${description}")
+        Log.d(TAG, "WebViewActivity::showError->tlsWebViewClient clientAuthNeeded: ${tlsWebViewClient?.isTLSClientAuthNeeded}, hasUserDeniedAccess: ${tlsWebViewClient.hasUserDeniedAccess}, isCertificateChainValid: ${tlsWebViewClient.isCertificateChainValid}")
         if (tlsWebViewClient?.isTLSClientAuthNeeded == true &&
             errorType == ErrorType.TIMEOUT &&
             !tlsWebViewClient.hasUserDeniedAccess
         ) {
+            Log.e(TAG, "WebViewActivity::showError -> TimeoutError")
             // Ignore if a timeout occurs but the user has not denied access
             // It is likely due to the user not choosing a key yet
             return
@@ -1218,7 +1222,7 @@ class WebViewActivity : BaseActivity(), io.homeassistant.companion.android.webvi
             tlsWebViewClient.hasUserDeniedAccess
         ) {
             // If no key is available to the app
-            alert.setMessage(commonR.string.tls_cert_not_found_message)
+            alert.setMessage(commonR.string.tls_cert_not_found_message) // This is the error I want / expect
             alert.setTitle(commonR.string.tls_cert_title)
             alert.setPositiveButton(android.R.string.ok) { _, _ ->
                 serverManager.getServer(presenter.getActiveServer())?.let {
